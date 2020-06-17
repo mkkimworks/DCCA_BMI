@@ -12,4 +12,4 @@ Utilized toolboxes
    - Deep Learning Toolbox in Matlab
    - DCCA toolbox (https://ttic.uchicago.edu/~wwang5/dccae.html)
 Dataset
-   - Dataset CRT (authorization required {non-distributable})
+   - Dataset CRT (CRCNS.org; center-out reaching task, authorization required to use {non-distributable})
