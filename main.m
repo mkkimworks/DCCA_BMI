@@ -322,7 +322,7 @@ for d = 1 : 3
         for u2 = 1 : length(y_vel)-1
             indy                = X(:,2) >= y_vel(u2) & X(:,2) < y_vel(u2+1);
             ind                 = indx & indy;
-            origin(u1,u2)       = nanmean(TrZ(ind,sorted_r2_unit_ind(d)));
+            origin(u1,u2)       = nanmean(TrZ(ind,max_cell(d)));
             lcca_z(u1,u2)       = nanmean(TrLCCA_Z(ind,d));
             dcca_z(u1,u2)       = nanmean(TrDCCA_Z(ind,d));
         end
@@ -390,9 +390,9 @@ end
 
 %% Figure 6
 figure; 
-h1 = subplot(131); fcnErrorbar2D({True_POS, TargetInd},'color',ones(1,3)*0.6,'handles',h1); hold(h1,'on'); fcnErrorbar2D({R_phat_RNN, TargetInd},'color','b','handles',h1); fcnErrorbar2D({R_phat_LKF, TargetInd},'color','r','handles',h1, 'title','Z_E_-_F_R'); 
-h1 = subplot(132); fcnErrorbar2D({True_POS, TargetInd},'color',ones(1,3)*0.6,'handles',h1); hold(h1,'on'); fcnErrorbar2D({L_phat_RNN, TargetInd},'color','b','handles',h1); fcnErrorbar2D({L_phat_LKF, TargetInd},'color','r','handles',h1, 'title','Z_E_-_F_R'); 
-h1 = subplot(133); fcnErrorbar2D({True_POS, TargetInd},'color',ones(1,3)*0.6,'handles',h1); hold(h1,'on'); fcnErrorbar2D({D_phat_RNN, TargetInd},'color','b','handles',h1); fcnErrorbar2D({D_phat_LKF, TargetInd},'color','r','handles',h1, 'title','Z_E_-_F_R'); 
+h1 = subplot(131); plot(0, 0, 'yo','markersize',10,'MarkerFaceColor','y'); hold on; fcnErrorbar2D({True_POS, TargetInd},'color',ones(1,3)*0.6,'handles',h1); hold(h1,'on'); fcnErrorbar2D({R_phat_RNN, TargetInd},'color','b','handles',h1); fcnErrorbar2D({R_phat_LKF, TargetInd},'color','r','handles',h1, 'title','Z_E_-_F_R');
+h1 = subplot(132); plot(0, 0, 'yo','markersize',10,'MarkerFaceColor','y'); hold on; fcnErrorbar2D({True_POS, TargetInd},'color',ones(1,3)*0.6,'handles',h1); hold(h1,'on'); fcnErrorbar2D({L_phat_RNN, TargetInd},'color','b','handles',h1); fcnErrorbar2D({L_phat_LKF, TargetInd},'color','r','handles',h1, 'title','Z_E_-_F_R');
+h1 = subplot(133); plot(0, 0, 'yo','markersize',10,'MarkerFaceColor','y'); hold on; fcnErrorbar2D({True_POS, TargetInd},'color',ones(1,3)*0.6,'handles',h1); hold(h1,'on'); fcnErrorbar2D({D_phat_RNN, TargetInd},'color','b','handles',h1); fcnErrorbar2D({D_phat_LKF, TargetInd},'color','r','handles',h1, 'title','Z_E_-_F_R');
 
 
 
