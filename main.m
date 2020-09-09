@@ -15,15 +15,14 @@ addpath(genpath('./Functions/'));
 addpath(genpath('./Dataset/'));
 
 
-dataset(1)                      = load('MonkeyC_Dataset.mat');    % Dataset for Monkey C
-dataset(2)                      = load('MonkeyM_Dataset.mat');    % Dataset for Monkey M
-
+dataset                         = load('MonkeyM_Dataset.mat');    % Dataset for Monkey M
+num_dataset                     = length(dataset);
 
 manifold_colors                 = 'kbcmgr';
 manifold_types                  = {'Z_E_-_F_R','Z_P_C_A','Z_F_A','Z_L_D_S','Z_L_C_V','Z_D_C_V'};
 decoder_types1                  = {'Z_E_-_F_R','PCA_L_K_F','NDF','LCCA_L_K_F','DCCA_L_K_F','smooth LCCA_L_K_F','smooth DCCA_L_K_F'};
 decoder_types2                  = {'PC_L_S_T_M','LCCA_L_S_T_M','DCCA_L_S_T_M','smooth LCCA_L_S_T_M','smooth DCCA_L_S_T_M'};
-data_name                       = {'MonkeyC_Data','MonkeyM_Data'};
+data_name                       = {'MonkeyM_Data'};
 
 training_set_ratio              = 0.75;
 bin_length                      = 0.05;
@@ -41,7 +40,7 @@ GW                              = gausswin(6);
 GW                              = GW./sum(GW);
 smoother                        = @(X)filtfilt(GW,1,X);
 %%
-for n = 1 : 2
+for n = 1 : num_dataset
     data                        = dataset(n);
     Dat                         = DataSegmentation(data, training_set_ratio,n);
     tic
@@ -75,7 +74,7 @@ for n = 1 : 2
 end
 
 %%
-for n = 1 : 2
+for n = 1 : num_dataset
     data                        = dataset(n);
     load(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}));
     smooth_fcnPCA               = @(Z, n)smoother(pca_prm.fcn(gaussian_smoothing(Z, bin_length, PC_SD(n))));
@@ -166,7 +165,7 @@ cc_lcca = [];
 cc_dcca = [];
 F1 = figure(1);clf; set(F1,'position',[793   375   495   763]);
 F2 = figure(2);clf; set(F2,'position',[793   375   495   763]);
-for n = 1 : 2
+for n = 1 : num_dataset
     load(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}));
     smooth_fcnPCA               = @(Z, n)smoother(pca_prm.fcn(gaussian_smoothing(Z, bin_length, PC_SD(n))));
     smooth_fcnFA                = @(Z, n)smoother(fa_prm.fcn(gaussian_smoothing(Z, bin_length, FA_SD(n))));
@@ -212,7 +211,7 @@ save_fig(sprintf('./Figures/DCCA_Tuning'), F2);
 
 % Figure 3
 F0 = figure(1);clf; set(F0,'position',[751   216   599   924]);
-for n = 1 : 2
+for n = 1 : num_dataset
     load(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}));
     smooth_fcnPCA               = @(Z, n)smoother(pca_prm.fcn(gaussian_smoothing(Z, bin_length, PC_SD(n))));
     smooth_fcnFA                = @(Z, n)smoother(fa_prm.fcn(gaussian_smoothing(Z, bin_length, FA_SD(n))));
@@ -390,7 +389,7 @@ save_fig(sprintf('./Figures/RegressionNeuralRep'), F0);
 
 
 % Figure 4
-for n = 1 : 2
+for n = 1 : num_dataset
     load(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}));
     smooth_fcnPCA               = @(Z, n)smoother(pca_prm.fcn(gaussian_smoothing(Z, bin_length, PC_SD(n))));
     smooth_fcnFA                = @(Z, n)smoother(fa_prm.fcn(gaussian_smoothing(Z, bin_length, FA_SD(n))));
@@ -536,7 +535,7 @@ end
 % lstm_parameter_optimization
 % load('./Parameters/lstm_param.mat');
 % vel_mae_lkf = []; lstmrst = [];
-% for n = 1 : 2
+% for n = 1 : num_dataset
 %     load(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}));
 %     smooth_fcnPCA               = @(Z, n)smoother(pca_prm.fcn(gaussian_smoothing(Z, bin_length, PC_SD(n))));
 %     smooth_fcnFA                = @(Z, n)smoother(fa_prm.fcn(gaussian_smoothing(Z, bin_length, FA_SD(n))));
@@ -604,7 +603,7 @@ end
 
 %% Decoding 
 warning off
-for n = 1 : 2
+for n = 1 : num_dataset
     t_cnt                   = zeros(NumTargets(n),1);
     t_cnt_lkf               = t_cnt;
     t_cnt_lstm              = t_cnt;
@@ -676,7 +675,7 @@ end
 
 
 % Figure 5 - 6
-for n = 1 : 2
+for n = 1 : num_dataset
     load(sprintf('DecodingResult_%s.mat',data_name{n}));
     
     if n == 1
@@ -980,7 +979,7 @@ end
 label = {'Z_E_-_F_R','Z_P_C_A','Z_F_A','Z_L_D_S','Z_L_C_V','Z_D_C_V'};
 
 F = figure;clf; set(F,'position',[466          80        1017         916]);
-for n = 1 : 2
+for n = 1 : num_dataset
     if n == 1
         kinWeight               = 100;
     else
@@ -1050,7 +1049,7 @@ for n = 1 : 2
 end
 save_fig(sprintf('./Figures/segPosPerf_%s',data_name{n}), F);
 
-for n = 1 : 2
+for n = 1 : num_dataset
     if n == 1
         kinWeight               = 100;
     else
@@ -1080,7 +1079,7 @@ for n = 1 : 2
 end
 
 
-for n = 1 : 2
+for n = 1 : num_dataset
     if n == 1
         kinWeight               = 100;
     else
