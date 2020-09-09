@@ -27,7 +27,7 @@ data_name                       = {'MonkeyM_Data'};
 training_set_ratio              = 0.75;
 bin_length                      = 0.05;
 colors                          = [1 0.5 0 ; 0 0.5 1];
-NumTargets                      = [8, length(dataset(2).Target)];
+NumTargets                      = length(dataset(1).Target);
 
 %% Acquire neural representations
 % Hyperparameters determined by Bayesian optimization algorithm (dcca_parameter_optimization.m)
