@@ -28,7 +28,7 @@ training_set_ratio              = 0.75;
 bin_length                      = 0.05;
 colors                          = [1 0.5 0 ; 0 0.5 1];
 NumTargets                      = length(dataset(1).Target);
-
+mkdir('./Figures');
 %% Acquire neural representations
 % Hyperparameters determined by Bayesian optimization algorithm (dcca_parameter_optimization.m)
 load('./Parameters/deep_CCA_hyperparameters.mat');
@@ -109,11 +109,11 @@ for n = 1 : num_dataset
     TI                      = unique(Dat.TeI);
     
     for t = 1 : 3
-        s1 = subplot(3,2,(t-1)*2+n,'parent',F1); plot(TeLCCA_X(:,t), TeLCCA_Z(:,t),'^','color',colors(n,:),'parent',s1); hold(s1,'on');
+        s1 = subplot(3,1,t,'parent',F1); plot(TeLCCA_X(:,t), TeLCCA_Z(:,t),'^','color',colors(n,:),'parent',s1); hold(s1,'on');
         [b,~,~,~,stat] = regress(TeLCCA_Z(:,t), [ones(size(TeLCCA_X,1),1) TeLCCA_X(:,t)]);
         plot(TeLCCA_X(:,t), [ones(size(TeLCCA_X,1),1) TeLCCA_X(:,t)] * b,'k','linewidth',1.5,'parent',s1);
         title(sprintf('\\rho = %.2f (p < 0.01)',sqrt(stat(1))),'parent',s1); if n == 1; axis(s1,[-1 1 -1 1]*3); else; axis(s1,[-1 1 -1 1]*3); end
-        s2 = subplot(3,2,(t-1)*2+n,'parent',F2); plot(TeDCCA_X(:,t), TeDCCA_Z(:,t),'^','color',colors(n,:),'parent',s2); hold(s2,'on');
+        s2 = subplot(3,1,t,'parent',F2); plot(TeDCCA_X(:,t), TeDCCA_Z(:,t),'^','color',colors(n,:),'parent',s2); hold(s2,'on');
         [b,~,~,~,stat] = regress(TeDCCA_Z(:,t), [ones(size(TeDCCA_X,1),1) TeDCCA_X(:,t)]);
         plot(TeDCCA_X(:,t), [ones(size(TeDCCA_X,1),1) TeDCCA_X(:,t)] * b,'k','linewidth',1.5,'parent',s2);
         title(sprintf('\\rho = %.2f (p < 0.01)',sqrt(stat(1))),'parent',s2); if n == 1; axis(s2,[-1 1 -1 1]*3); else; axis(s2,[-1 1 -1 1]*3); end
@@ -125,6 +125,7 @@ save_fig(sprintf('./Figures/DCCA_Tuning'), F2);
 
 
 % Figure 3
+
 F0 = figure(1);clf; set(F0,'position',[751   216   599   924]);
 for n = 1 : num_dataset
     load(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}));
@@ -159,7 +160,7 @@ for n = 1 : num_dataset
     tr_err                      = [tr_err mae([ones(size(TrZ,1), 1) TrZ] * beta', Dat.TrX) * kinWeight];
     
     
-    s1 = subplot(6,2,(1-1)*2+n,'parent',F0);
+    s1 = subplot(6,1,1,'parent',F0);
     h1 = plot(time, TeZ(:,1),'color',ones(1,3)*0.6,'linewidth',1.5,'parent',s1); hold(s1,'on');
     h2 = plot(time, Hat_Z(:,1),'r','linewidth',1.0,'parent',s1);
     plot([time(trial_marker);time(trial_marker)], [0 10],'--k','parent',s1);
@@ -182,7 +183,7 @@ for n = 1 : num_dataset
     beta                        = Dat.TrX' * [ones(size(TrPCA_Z,1), 1) TrPCA_Z]*([ones(size(TrPCA_Z,1), 1) TrPCA_Z]'* [ones(size(TrPCA_Z,1), 1) TrPCA_Z])^-1;
     tr_err                      = [tr_err mae([ones(size(TrPCA_Z,1), 1) TrPCA_Z] * beta', Dat.TrX) * kinWeight];
     
-    s1 = subplot(6,2,(2-1)*2+n,'parent',F0);
+    s1 = subplot(6,1,2,'parent',F0);
     plot(time, TePCA_Z(:,1),'color',ones(1,3)*0.6,'linewidth',1.5,'parent',s1); hold(s1,'on');
     plot(time, HatPC_Z(:,1),'r','linewidth',1.0,'parent',s1);
     plot([time(trial_marker);time(trial_marker)], [-25 60],'--k','parent',s1);
@@ -202,7 +203,7 @@ for n = 1 : num_dataset
     beta                        = Dat.TrX' * [ones(size(TrFA_Z,1), 1) TrFA_Z]*([ones(size(TrFA_Z,1), 1) TrFA_Z]'* [ones(size(TrFA_Z,1), 1) TrFA_Z])^-1;
     tr_err                      = [tr_err mae([ones(size(TrFA_Z,1), 1) TrFA_Z] * beta', Dat.TrX) * kinWeight];
         
-    s1 = subplot(6,2,(3-1)*2+n,'parent',F0);
+    s1 = subplot(6,1,3,'parent',F0);
     plot(time, TeFA_Z(:,1),'color',ones(1,3)*0.6,'linewidth',1.5,'parent',s1); hold(s1,'on');
     plot(time, HatFA_Z(:,1),'r','linewidth',1.0,'parent',s1);
     plot([time(trial_marker);time(trial_marker)], [-25 60],'--k','parent',s1);
@@ -223,7 +224,7 @@ for n = 1 : num_dataset
     beta                        = Dat.TrX' * [ones(size(TrLDS_Z,1), 1) TrLDS_Z]*([ones(size(TrLDS_Z,1), 1) TrLDS_Z]'* [ones(size(TrLDS_Z,1), 1) TrLDS_Z])^-1;
     tr_err                      = [tr_err mae([ones(size(TrLDS_Z,1), 1) TrLDS_Z] * beta', Dat.TrX) * kinWeight];
     
-    s1 = subplot(6,2,(4-1)*2+n,'parent',F0);
+    s1 = subplot(6,1,4,'parent',F0);
     plot(time, TeLDS_Z(:,1),'color',ones(1,3)*0.6,'linewidth',1.5,'parent',s1); hold(s1,'on');
     plot(time, HatLD_Z(:,1),'r','linewidth',1.0,'parent',s1);
     plot([time(trial_marker);time(trial_marker)], [-20 20],'--k','parent',s1);
@@ -244,7 +245,7 @@ for n = 1 : num_dataset
     beta                        = TrLCCA_X' * [ones(size(TrLCCA_Z,1), 1) TrLCCA_Z]*([ones(size(TrLCCA_Z,1), 1) TrLCCA_Z]'* [ones(size(TrLCCA_Z,1), 1) TrLCCA_Z])^-1;
     tr_err                      = [tr_err mae(lcca_prm.fcn.invB([ones(size(TrLCCA_Z,1), 1) TrLCCA_Z] * beta'), Dat.TrX) * kinWeight];
     
-    s1 = subplot(6,2,(5-1)*2+n,'parent',F0);
+    s1 = subplot(6,1,5,'parent',F0);
     plot(time, TeLCCA_Z(:,1),'color',ones(1,3)*0.6,'linewidth',1.5,'parent',s1); hold(s1,'on');
     plot(time, HatLC_Z(:,1),'r','linewidth',1.0,'parent',s1);
     plot([time(trial_marker);time(trial_marker)], [-5 5],'--k','parent',s1);
@@ -266,7 +267,7 @@ for n = 1 : num_dataset
     rest                        = dcca_prm.fcn.invB([ones(size(TrDCCA_Z,1), 1) TrDCCA_Z] * beta');
     tr_err                      = [tr_err mae(rest(:,1:3), Dat.TrX) * kinWeight];
     
-    s1 = subplot(6,2,(6-1)*2+n,'parent',F0);
+    s1 = subplot(6,1,6,'parent',F0);
     plot(time, TeDCCA_Z(:,1),'color',ones(1,3)*0.6,'linewidth',1.5,'parent',s1); hold(s1,'on');
     plot(time, HatDC_Z(:,1),'r','linewidth',1.0,'parent',s1);
     plot([time(trial_marker);time(trial_marker)], [-5 5],'--k','parent',s1);
@@ -589,15 +590,12 @@ for n = 1 : num_dataset
 end
 
 
+
 % Figure 5 - 6
 for n = 1 : num_dataset
     load(sprintf('DecodingResult_%s.mat',data_name{n}));
     
-    if n == 1
-        kinWeight               = 100;
-    else
-        kinWeight               = 1;
-    end
+    kinWeight                   = 1;
     % Draw Velocity Trace
     load(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}));
     time                        = 0 : bin_length : size(Dat.TeX,1)*bin_length - bin_length;    
@@ -621,7 +619,7 @@ for n = 1 : num_dataset
     
     mark_ind                    = [diff(Dat.TeI);0];
     F = figure(1);clf; set(F,'position',[104         494        1766         395]);
-    if n == 1
+    if n == 2
         xscale                  = [time(1) 10];
         yscale                  = [-0.02 0.02]*kinWeight;
     else
@@ -655,251 +653,16 @@ for n = 1 : num_dataset
        
     save_fig(sprintf('./Figures/VelocityTrajectory_%s',data_name{n}), F);
     %----------------------------------------------------------------------
-    
-    t_cnt                       = output_lkf.t_cnt;
-    ptrue                       = [];
-    Z_pos                       = [];
-    P_pos                       = [];
-    F_pos                       = [];
-    L_pos                       = [];
-    D_pos                       = [];
-    S_pos                       = [];
-    L_Z_pos                       = [];
-    L_P_pos                       = [];
-    L_F_pos                       = [];
-    L_S_pos                       = [];
-    L_L_pos                       = [];
-    L_D_pos                       = [];
-    for d = 1 : NumTargets(n)       
-        try
-        ind     = squeeze(sum(sum(output_lkf.pos_traj{1}(:,:,:,d),2),1)) ~= 0;
-        ptrue_  = output_lkf.pos_traj{1}(:,:,ind,d);
-        Z_pos_  = output_lkf.pos_traj{2}(:,:,ind,d);
-        P_pos_  = output_lkf.pos_traj{3}(:,:,ind,d);
-        F_pos_  = output_lkf.pos_traj{4}(:,:,ind,d);
-        L_pos_  = output_lkf.pos_traj{6}(:,:,ind,d);
-        D_pos_  = output_lkf.pos_traj{7}(:,:,ind,d);
-        S_pos_  = output_lds.pos_traj{2}(:,:,ind,d);
-        
-        ptrue(:,:,1:size(ptrue_,3),d)  = ptrue_ * kinWeight;
-        Z_pos(:,:,1:size(Z_pos_,3),d)  = Z_pos_ * kinWeight;
-        P_pos(:,:,1:size(P_pos_,3),d)  = P_pos_ * kinWeight;
-        F_pos(:,:,1:size(F_pos_,3),d)  = F_pos_ * kinWeight;
-        L_pos(:,:,1:size(L_pos_,3),d)  = L_pos_ * kinWeight;
-        D_pos(:,:,1:size(D_pos_,3),d)  = D_pos_ * kinWeight;
-        S_pos(:,:,1:size(S_pos_,3),d)  = S_pos_ * kinWeight;
-        
-        Z_pos_  = output_lstm.pos_traj{2}(:,:,ind,d);
-        P_pos_  = output_lstm.pos_traj{3}(:,:,ind,d);
-        F_pos_  = output_lstm.pos_traj{4}(:,:,ind,d);
-        S_pos_  = output_lstm.pos_traj{5}(:,:,ind,d);
-        L_pos_  = output_lstm.pos_traj{6}(:,:,ind,d);
-        D_pos_  = output_lstm.pos_traj{7}(:,:,ind,d);
-        
-        L_Z_pos(:,:,1:size(Z_pos_,3),d)  = Z_pos_ * kinWeight;
-        L_P_pos(:,:,1:size(P_pos_,3),d)  = P_pos_ * kinWeight;
-        L_F_pos(:,:,1:size(F_pos_,3),d)  = F_pos_ * kinWeight;
-        L_S_pos(:,:,1:size(F_pos_,3),d)  = S_pos_ * kinWeight;
-        L_L_pos(:,:,1:size(L_pos_,3),d)  = L_pos_ * kinWeight;
-        L_D_pos(:,:,1:size(D_pos_,3),d)  = D_pos_ * kinWeight;
-        catch
-        end
-    end
-    
-    TU = unique(Dat.TeI);
-    
-    clear std_vel*
-    clear std_pos*
-    for t = 1 : length(TU)
-        idx = TU(t) == Dat.TeI;
-        std_vel(t,:) =std(vtrue(idx,:));
-        std_pos(t,:) =std(cumsum(vtrue(idx,:)));
-        
-        std_vel_pred_Z(t,:) = std(Z_vel(idx,:));
-        std_vel_pred_P(t,:) = std(P_vel(idx,:));
-        std_vel_pred_F(t,:) = std(F_vel(idx,:));
-        std_vel_pred_S(t,:) = std(S_vel(idx,:));
-        std_vel_pred_L(t,:) = std(L_vel(idx,:));
-        std_vel_pred_D(t,:) = std(D_vel(idx,:));
-        
-        std_pos_pred_Z(t,:) = std(Z_vel(idx,:));
-        std_pos_pred_P(t,:) = std(P_vel(idx,:));
-        std_pos_pred_F(t,:) = std(F_vel(idx,:));
-        std_pos_pred_S(t,:) = std(S_vel(idx,:));
-        std_pos_pred_L(t,:) = std(L_vel(idx,:));
-        std_pos_pred_D(t,:) = std(D_vel(idx,:));
-    end
-    truepos_std(n,:) = mean(std_pos)
-    truevel_std(n,:) = mean(std_vel)
-    
-    lkf_pf_vel(n,:) = mean([mean((std_vel_pred_Z - std_vel) ./ (std_vel_pred_Z + std_vel),1) * 100
-    mean((std_vel_pred_P - std_vel) ./ (std_vel_pred_P + std_vel),1) * 100
-    mean((std_vel_pred_F - std_vel) ./ (std_vel_pred_F + std_vel),1) * 100
-    mean((std_vel_pred_S - std_vel) ./ (std_vel_pred_S + std_vel),1) * 100
-    mean((std_vel_pred_L - std_vel) ./ (std_vel_pred_L + std_vel),1) * 100
-    mean((std_vel_pred_D - std_vel) ./ (std_vel_pred_D + std_vel),1) * 100],1)
-    
-    lkf_pf_pos(n,:) = mean([mean((std_pos_pred_Z - std_pos) ./ (std_pos_pred_Z + std_pos),1) * 100
-    mean((std_pos_pred_P - std_pos) ./ (std_pos_pred_P + std_pos),1) * 100
-    mean((std_pos_pred_F - std_pos) ./ (std_pos_pred_F + std_pos),1) * 100
-    mean((std_pos_pred_S - std_pos) ./ (std_pos_pred_S + std_pos),1) * 100
-    mean((std_pos_pred_L - std_pos) ./ (std_pos_pred_L + std_pos),1) * 100
-    mean((std_pos_pred_D - std_pos) ./ (std_pos_pred_D + std_pos),1) * 100],1)
-
-    for t = 1 : length(TU)
-        idx = TU(t) == Dat.TeI;
-        std_vel(t,:) =std(vtrue(idx,:));
-        std_pos(t,:) =std(cumsum(vtrue(idx,:)));
-        
-        std_vel_pred_Z(t,:) = std(L_Z_vel(idx,:));
-        std_vel_pred_P(t,:) = std(L_P_vel(idx,:));
-        std_vel_pred_F(t,:) = std(L_F_vel(idx,:));
-        std_vel_pred_S(t,:) = std(L_S_vel(idx,:));
-        std_vel_pred_L(t,:) = std(L_L_vel(idx,:));
-        std_vel_pred_D(t,:) = std(L_D_vel(idx,:));
-        
-        std_pos_pred_Z(t,:) = std(L_Z_vel(idx,:));
-        std_pos_pred_P(t,:) = std(L_P_vel(idx,:));
-        std_pos_pred_F(t,:) = std(L_F_vel(idx,:));
-        std_pos_pred_S(t,:) = std(L_S_vel(idx,:));
-        std_pos_pred_L(t,:) = std(L_L_vel(idx,:));
-        std_pos_pred_D(t,:) = std(L_D_vel(idx,:));
-    end
-    
-    lstm_pf_vel(n,:) = mean([mean((std_vel_pred_Z - std_vel) ./ (std_vel_pred_Z + std_vel),1) * 100
-    mean((std_vel_pred_P - std_vel) ./ (std_vel_pred_P + std_vel),1) * 100
-    mean((std_vel_pred_F - std_vel) ./ (std_vel_pred_F + std_vel),1) * 100
-    mean((std_vel_pred_S - std_vel) ./ (std_vel_pred_S + std_vel),1) * 100
-    mean((std_vel_pred_L - std_vel) ./ (std_vel_pred_L + std_vel),1) * 100
-    mean((std_vel_pred_D - std_vel) ./ (std_vel_pred_D + std_vel),1) * 100],1)
-    
-    lstm_pf_pos(n,:) = mean([mean((std_pos_pred_Z - std_pos) ./ (std_pos_pred_Z + std_pos),1) * 100
-    mean((std_pos_pred_P - std_pos) ./ (std_pos_pred_P + std_pos),1) * 100
-    mean((std_pos_pred_F - std_pos) ./ (std_pos_pred_F + std_pos),1) * 100
-    mean((std_pos_pred_S - std_pos) ./ (std_pos_pred_S + std_pos),1) * 100
-    mean((std_pos_pred_L - std_pos) ./ (std_pos_pred_L + std_pos),1) * 100
-    mean((std_pos_pred_D - std_pos) ./ (std_pos_pred_D + std_pos),1) * 100],1)
-    
-    
-    mu_Z_pos_var = []; 
-    er_Z_pos_var = []; 
-    mu_P_pos_var = []; 
-    er_P_pos_var = []; 
-    mu_F_pos_var = []; 
-    er_F_pos_var = []; 
-    mu_S_pos_var = []; 
-    er_S_pos_var = []; 
-    mu_L_pos_var = []; 
-    er_L_pos_var = []; 
-    mu_D_pos_var = []; 
-    er_D_pos_var = []; 
-    for d = 1 : 8
-        mu_Z_pos_var(:,:,d)     = mean(squeeze(std(Z_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_Z_pos_var(:,:,d)     = std(squeeze(std(Z_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-        
-        mu_P_pos_var(:,:,d)     = mean(squeeze(std(P_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_P_pos_var(:,:,d)     = std(squeeze(std(P_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-        
-        mu_F_pos_var(:,:,d)     = mean(squeeze(std(F_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_F_pos_var(:,:,d)     = std(squeeze(std(F_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-        
-        mu_S_pos_var(:,:,d)     = mean(squeeze(std(S_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_S_pos_var(:,:,d)     = std(squeeze(std(S_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-        
-        mu_L_pos_var(:,:,d)     = mean(squeeze(std(L_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_L_pos_var(:,:,d)     = std(squeeze(std(L_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-        
-        mu_D_pos_var(:,:,d)     = mean(squeeze(std(D_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_D_pos_var(:,:,d)     = std(squeeze(std(D_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-    end
-    if n == 2
-        mu_Z_pos_var = mean(std(Z_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-        mu_P_pos_var = mean(std(P_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-        mu_F_pos_var = mean(std(F_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-        mu_S_pos_var = mean(std(S_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-        mu_L_pos_var = mean(std(L_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-        mu_D_pos_var = mean(std(D_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-    end
-    
-    pos_std_lkf(:,:,n) = [mean(mu_Z_pos_var,3) ; mean(mu_P_pos_var,3) ; mean(mu_F_pos_var,3) ; mean(mu_S_pos_var,3) ; mean(mu_L_pos_var,3) ; mean(mu_D_pos_var,3)]
-    
-    for d = 1 : 8
-        mu_Z_pos_var(:,:,d)     = mean(squeeze(std(L_Z_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_Z_pos_var(:,:,d)     = std(squeeze(std(L_Z_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-        
-        mu_P_pos_var(:,:,d)     = mean(squeeze(std(L_P_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_P_pos_var(:,:,d)     = std(squeeze(std(L_P_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-        
-        mu_F_pos_var(:,:,d)     = mean(squeeze(std(L_F_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_F_pos_var(:,:,d)     = std(squeeze(std(L_F_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-        
-        mu_S_pos_var(:,:,d)     = mean(squeeze(std(L_S_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_S_pos_var(:,:,d)     = std(squeeze(std(L_S_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-        
-        mu_L_pos_var(:,:,d)     = mean(squeeze(std(L_L_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_L_pos_var(:,:,d)     = std(squeeze(std(L_L_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-        
-        mu_D_pos_var(:,:,d)     = mean(squeeze(std(L_D_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',1);
-        er_D_pos_var(:,:,d)     = std(squeeze(std(L_D_pos(:,:,1:t_cnt(d),d) - ptrue(:,:,1:t_cnt(d),d),[],1))',[],1);
-    end
-    if n == 2
-        mu_Z_pos_var = mean(std(L_Z_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-        mu_P_pos_var = mean(std(L_P_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-        mu_F_pos_var = mean(std(L_F_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-        mu_S_pos_var = mean(std(L_S_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-        mu_L_pos_var = mean(std(L_L_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-        mu_D_pos_var = mean(std(L_D_pos(:,:,:,t_cnt==1) - ptrue(:,:,:,t_cnt==1)),4);
-    end
-    pos_std_lstm(:,:,n) = [mean(mu_Z_pos_var,3) ; mean(mu_P_pos_var,3) ; mean(mu_F_pos_var,3) ; mean(mu_S_pos_var,3) ; mean(mu_L_pos_var,3) ; mean(mu_D_pos_var,3)]
-    
-    
-    
-    if n == 1
-        F = figure(1);clf; set(F,'position',[13         519        2192         352]);
-        h1 = subplot(161); plot(0, 0, 'o','MarkerEdgeColor','k','markerfacecolor','y','markersize',15); hold(h1,'on'); fcnErrorbar2D({ptrue, t_cnt},'color',ones(1,3)*0.6,'handles',h1); fcnErrorbar2D({L_Z_pos, t_cnt},'color','b','handles',h1, 'title','Z_E_-_F_R','fontsize',12); fcnErrorbar2D({Z_pos, t_cnt},'color','r','handles',h1, 'title','Z_E_-_F_R','fontsize',12); axis([-.1 .1 -.1 .1]*100); ylabel('P_Y'); set(gca,'DataAspectRatio',[1 1 1]);
-        h1 = subplot(162); plot(0, 0, 'o','MarkerEdgeColor','k','markerfacecolor','y','markersize',15); hold(h1,'on'); fcnErrorbar2D({ptrue, t_cnt},'color',ones(1,3)*0.6,'handles',h1); fcnErrorbar2D({L_P_pos, t_cnt},'color','b','handles',h1, 'title','PCA','fontsize',12); fcnErrorbar2D({P_pos, t_cnt},'color','r','handles',h1, 'title','Z_P_C_A','fontsize',12); axis([-.1 .1 -.1 .1]*100); set(gca,'DataAspectRatio',[1 1 1]);
-        h1 = subplot(163); plot(0, 0, 'o','MarkerEdgeColor','k','markerfacecolor','y','markersize',15); hold(h1,'on'); fcnErrorbar2D({ptrue, t_cnt},'color',ones(1,3)*0.6,'handles',h1); fcnErrorbar2D({L_F_pos, t_cnt},'color','b','handles',h1, 'title','FA','fontsize',12); fcnErrorbar2D({F_pos, t_cnt},'color','r','handles',h1, 'title','Z_F_A','fontsize',12); axis([-.1 .1 -.1 .1]*100); ylabel('P_Y');set(gca,'DataAspectRatio',[1 1 1]);
-        h1 = subplot(164); plot(0, 0, 'o','MarkerEdgeColor','k','markerfacecolor','y','markersize',15); hold(h1,'on'); fcnErrorbar2D({ptrue, t_cnt},'color',ones(1,3)*0.6,'handles',h1); fcnErrorbar2D({L_S_pos, t_cnt},'color','b','handles',h1, 'title','Z_L_D_S','fontsize',12); fcnErrorbar2D({S_pos, t_cnt},'color','r','handles',h1, 'title','Z_L_D_S','fontsize',12);axis([-.1 .1 -.1 .1]*100);set(gca,'DataAspectRatio',[1 1 1]);
-        h1 = subplot(165); plot(0, 0, 'o','MarkerEdgeColor','k','markerfacecolor','y','markersize',15); hold(h1,'on'); fcnErrorbar2D({ptrue, t_cnt},'color',ones(1,3)*0.6,'handles',h1); fcnErrorbar2D({L_L_pos, t_cnt},'color','b','handles',h1, 'title','LCCA','fontsize',12); fcnErrorbar2D({L_pos, t_cnt},'color','r','handles',h1, 'title','Z_L_C_V','fontsize',12);axis([-.1 .1 -.1 .1]*100);xlabel('P_X');ylabel('P_Y');set(gca,'DataAspectRatio',[1 1 1]);
-        h1 = subplot(166); plot(0, 0, 'o','MarkerEdgeColor','k','markerfacecolor','y','markersize',15); hold(h1,'on'); fcnErrorbar2D({ptrue, t_cnt},'color',ones(1,3)*0.6,'handles',h1); fcnErrorbar2D({L_D_pos, t_cnt},'color','b','handles',h1, 'title','DCCA','fontsize',12); fcnErrorbar2D({D_pos, t_cnt},'color','r','handles',h1, 'title','Z_D_C_V','fontsize',12);axis([-.1 .1 -.1 .1]*100);xlabel('P_X');set(gca,'DataAspectRatio',[1 1 1]);
-        save_fig(sprintf('./Figures/PositionTrajectory_%s',data_name{n}), F);
-    else
-%         F = figure(1);clf; set(F,'position',[364 424 1082 217]); 
-%         view_sel_trials = [4 10 49 57 69 73 121];
-%         for sub_t = 1 : 5
-%             sub_i = view_sel_trials(sub_t);
-%             h1 = subplot(1,5,sub_t);
-%             hp0 = plot(0, 0, 'o','MarkerEdgeColor','k','markerfacecolor','y','markersize',15); hold(h1,'on');
-%             hp1 = plot(ptrue(:,1,1,sub_i), ptrue(:,2,1,sub_i),'color',ones(1,3)*0.6,'linewidth',1.5);
-%             hp2 = plot(P_pos(:,1,1,sub_i), P_pos(:,2,1,sub_i),'b','linewidth',1.5);
-%             hp3 = plot(F_pos(:,1,1,sub_i), F_pos(:,2,1,sub_i),'c','linewidth',1.5);
-%             hp4 = plot(S_pos(:,1,1,sub_i), S_pos(:,2,1,sub_i),'m','linewidth',1.5);
-%             hp5 = plot(L_pos(:,1,1,sub_i), L_pos(:,2,1,sub_i),'m','linewidth',1.5);
-%             hp6 = plot(D_pos(:,1,1,sub_i), D_pos(:,2,1,sub_i),'r','linewidth',1.5);
-%             
-%             axis(h1,[-10 10 -10 10]); set(h1, 'fontsize',12);
-%             if sub_t == 1
-%                 L = legend([hp0, hp1, hp2, hp3, hp4, hp5, hp6],{'Start point', 'Actual','PCA','FA','NDF','LCCA','DCCA'});
-%                 L.Position = [0.0175    0.3323    0.0837    0.5195]; L.Box= 'off';
-%             end
-%             set(h1, 'DataAspectRatio',[1 1 1]);
-%             title(sprintf('Trial %d', sub_t));
-%         end
-    end
-    
 end
+
 
 
 %% Figure 7 - 8
 label = {'Z_E_-_F_R','Z_P_C_A','Z_F_A','Z_L_D_S','Z_L_C_V','Z_D_C_V'};
 
-F = figure;clf; set(F,'position',[466          80        1017         916]);
+F = figure;clf; set(F,'position',[466.0000  571.6667  989.6667  424.3333]);
 for n = 1 : num_dataset
-    if n == 1
-        kinWeight               = 100;
-    else
-        kinWeight               = 1;
-    end
+    kinWeight                   = 1;
     load(sprintf('DecodingResult_%s.mat',data_name{n}));
     
     vel_corr_lkf                = output_lkf.vel_CC;
@@ -911,11 +674,7 @@ for n = 1 : num_dataset
     vel_corr_lds                = squeeze(output_lds.vel_CC)';
     vel_mae_lds                 = output_lds.vel_mae(:,1);
     pos_mae_lds                 = output_lds.pos_mae(:,1);
-
-%     vel_mae                     = vel_mae_lkf*kinWeight;
-%     pos_mae                     = pos_mae_lkf*kinWeight;
-%     L_vel_mae                   = vel_mae_lstm*kinWeight;
-%     L_pos_mae                   = pos_mae_lstm*kinWeight;
+    
     vel_mae                     = [vel_mae_lkf(:,1:3) vel_mae_lds vel_mae_lkf(:,[5 6])]*kinWeight;
     pos_mae                     = [pos_mae_lkf(:,1:3) pos_mae_lds pos_mae_lkf(:,[5 6])]*kinWeight;
     L_vel_mae                   = vel_mae_lstm*kinWeight;
@@ -940,7 +699,7 @@ for n = 1 : num_dataset
     disp('Velocity LSTM')
     [~,tbl,stat] = friedman(L_vel_mae,1,'off'); C = multcompare(stat,'CType','bonferroni','Display','off')
     
-    s1 = subplot(2,2,(n-1)*2+1); 
+    s1 = subplot(1,2,(n-1)*2+1); 
     b1 = bar(1 : 3, mu_vel(1:3),'FaceColor','r','FaceAlpha',0.5,'linewidth',1.5,'parent',s1); hold(s1,'on'); errorbar(1 : 3, mu_vel(1:3), er_vel(1:3), 'k','LineStyle','none','linewidth',1.5,'parent',s1);
     b1 = bar(4, mu_vel(4),'FaceColor','r','FaceAlpha',0.5,'linewidth',1.5,'parent',s1); hold(s1,'on'); errorbar(4, mu_vel(4), er_vel(4), 'k','LineStyle','none','linewidth',1.5,'parent',s1);
     b1 = bar(5 : 6, mu_vel(5:6),'FaceColor','r','FaceAlpha',0.5,'linewidth',1.5,'parent',s1); hold(s1,'on'); errorbar(5:6, mu_vel(5:6), er_vel(5:6), 'k','LineStyle','none','linewidth',1.5,'parent',s1);
@@ -953,7 +712,7 @@ for n = 1 : num_dataset
     [~,tbl,stat] = friedman(pos_mae,1,'off'); C = multcompare(stat,'CType','bonferroni','Display','off')
     disp('Position LSTM')
     [~,tbl,stat] = friedman(L_pos_mae,1,'off'); C = multcompare(stat,'CType','bonferroni','Display','off')
-    s1 = subplot(2,2,n*2); 
+    s1 = subplot(1,2,n*2); 
     b1 = bar(1 : 3, mu_pos(1:3),'FaceColor','r','FaceAlpha',0.5,'linewidth',1.5,'parent',s1); hold(s1,'on'); errorbar(1 : 3, mu_pos(1:3), er_pos(1:3), 'k','LineStyle','none','linewidth',1.5,'parent',s1);
     b1 = bar(4, mu_pos(4),'FaceColor','r','FaceAlpha',0.5,'linewidth',1.5,'parent',s1); hold(s1,'on'); errorbar(4, mu_pos(4), er_pos(4), 'k','LineStyle','none','linewidth',1.5,'parent',s1);
     b1 = bar(5 : 6, mu_pos(5:6),'FaceColor','r','FaceAlpha',0.5,'linewidth',1.5,'parent',s1); hold(s1,'on'); errorbar(5:6, mu_pos(5:6), er_pos(5:6), 'k','LineStyle','none','linewidth',1.5,'parent',s1);
@@ -964,42 +723,9 @@ for n = 1 : num_dataset
 end
 save_fig(sprintf('./Figures/segPosPerf_%s',data_name{n}), F);
 
-for n = 1 : num_dataset
-    if n == 1
-        kinWeight               = 100;
-    else
-        kinWeight               = 1;
-    end
-    load(sprintf('DecodingResult_%s.mat',data_name{n}));
-    
-    mu_vel_corr_lkf             = mean(output_lkf.vel_CC,3)';
-    sd_vel_corr_lkf             = std(output_lkf.vel_CC,[],3)';
-    mu_vel_corr_lstm            = mean(output_lstm.vel_CC,3)';
-    sd_vel_corr_lstm            = std(output_lstm.vel_CC,[],3)';
-    
-    mu_vel_corr_lds             = mean(squeeze(output_lds.vel_CC),2);
-    sd_vel_corr_lds             = std(squeeze(output_lds.vel_CC),[],2);
-    
-    mu_vel_corr_lkf(:,4) = mu_vel_corr_lds;
-    sd_vel_corr_lkf(:,4) = sd_vel_corr_lds;
-    
-    fprintf('\n lkf: ');
-    for j = 1 : 6
-        fprintf('(%.2f%s%.2f, %.2f%s%.2f) \t', mu_vel_corr_lkf(1,j), char(177), sd_vel_corr_lkf(1,j), mu_vel_corr_lkf(2,j), char(177), sd_vel_corr_lkf(2,j))
-    end
-    fprintf('\n lstm: ');
-    for j = 1 : 6
-        fprintf('(%.2f%s%.2f, %.2f%s%.2f) \t', mu_vel_corr_lstm(1,j), char(177), sd_vel_corr_lstm(1,j), mu_vel_corr_lstm(2,j), char(177), sd_vel_corr_lstm(2,j))
-    end
-end
-
 
 for n = 1 : num_dataset
-    if n == 1
-        kinWeight               = 100;
-    else
-        kinWeight               = 1;
-    end
+    kinWeight                   = 1;
     load(sprintf('DecodingResult_%s.mat',data_name{n}));
     
     vel_corr_lkf                = output_lkf.vel_CC;
@@ -1012,10 +738,6 @@ for n = 1 : num_dataset
     vel_mae_lds                 = output_lds.vel_mae(:,1);
     pos_mae_lds                 = output_lds.pos_mae(:,1);
 
-%     vel_mae                     = vel_mae_lkf*kinWeight;
-%     pos_mae                     = pos_mae_lkf*kinWeight;
-%     L_vel_mae                   = vel_mae_lstm*kinWeight;
-%     L_pos_mae                   = pos_mae_lstm*kinWeight;
     vel_mae                     = [vel_mae_lkf(:,1:3) vel_mae_lds vel_mae_lkf(:,[5 6])]*kinWeight;
     pos_mae                     = [pos_mae_lkf(:,1:3) pos_mae_lds pos_mae_lkf(:,[5 6])]*kinWeight;
     L_vel_mae                   = vel_mae_lstm*kinWeight;
@@ -1104,5 +826,3 @@ for n = 1 : num_dataset
     xtickangle(45);
     save_fig(sprintf('./Figures/PosPerf_%s',data_name{n}), F);
 end
-
-
