@@ -15,7 +15,7 @@ Dat.TrZ                     = data.Z(seg.trid,:);
 Dat.TeZ                     = data.Z(seg.teid,:);
 Dat.TrX                     = [data.X(seg.trid,:) sqrt(sum(data.X(seg.trid,:).^2,2))];
 Dat.TeX                     = [data.X(seg.teid,:) sqrt(sum(data.X(seg.teid,:).^2,2))];
-if n == 1
+if n == 2
     Dat.TrG                 = data.Target.deg(seg.trtri);
     Dat.TeG                 = data.Target.deg(seg.tetri);
 else
