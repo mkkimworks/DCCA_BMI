@@ -41,35 +41,39 @@ GW                              = GW./sum(GW);
 smoother                        = @(X)filtfilt(GW,1,X);
 %%
 for n = 1 : num_dataset
-    data                        = dataset(n);
-    Dat                         = DataSegmentation(data, training_set_ratio,n);
-    tic
-    % (1) PCA
-    q                           = num_comps(n).pc;
-    TrZ                         = gaussian_smoothing(Dat.TrZ, bin_length, PC_SD(n));
-    pca_prm                     = fcnPCA(TrZ, q);
-    
-    % (2) Factor Analysis
-    q                           = num_comps(n).fa;
-    TrZ                         = gaussian_smoothing(Dat.TrZ, bin_length, FA_SD(n));
-    fa_prm                      = fcnFA(TrZ, q);
-    
-    % (3) LDS
-    q                           = num_comps(n).ld;
-    [lds_prm, llh]              = EM_LDS(Dat.TrZ', q);
-    
-    % (4) Linear CCA
-    TrZ                         = gaussian_smoothing(Dat.TrZ, bin_length, LC_SD(n));
-    lcca_prm                    = fcnCCA(TrZ, Dat.TrX);
-    
-    % (5) Deep CCA
-    TrZ                         = gaussian_smoothing(Dat.TrZ, bin_length, DC_SD(n));
-    dcca_prm                    = fcnDeepCCA(TrZ, Dat.TrX, Dat.TrI, data_name{n}, net_param(n), 0);
-    
-    if exist(sprintf('./CV_Data/'),'file') == 0
-        mkdir(sprintf('./CV_Data/'));
+    if exist(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}),'file') == 0
+        data                        = dataset(n);
+        Dat                         = DataSegmentation(data, training_set_ratio,n);
+        tic
+        % (1) PCA
+        q                           = num_comps(n).pc;
+        TrZ                         = gaussian_smoothing(Dat.TrZ, bin_length, PC_SD(n));
+        pca_prm                     = fcnPCA(TrZ, q);
+        
+        % (2) Factor Analysis
+        q                           = num_comps(n).fa;
+        TrZ                         = gaussian_smoothing(Dat.TrZ, bin_length, FA_SD(n));
+        fa_prm                      = fcnFA(TrZ, q);
+        
+        % (3) LDS
+        q                           = num_comps(n).ld;
+        [lds_prm, llh]              = EM_LDS(Dat.TrZ', q);
+        
+        % (4) Linear CCA
+        TrZ                         = gaussian_smoothing(Dat.TrZ, bin_length, LC_SD(n));
+        lcca_prm                    = fcnCCA(TrZ, Dat.TrX);
+        
+        % (5) Deep CCA
+        TrZ                         = gaussian_smoothing(Dat.TrZ, bin_length, DC_SD(n));
+        dcca_prm                    = fcnDeepCCA(TrZ, Dat.TrX, Dat.TrI, data_name{n}, net_param(n), 0);
+        
+        if exist(sprintf('./CV_Data/'),'file') == 0
+            mkdir(sprintf('./CV_Data/'));
+        end
+        save(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}), 'Dat', 'pca_prm', 'fa_prm','lcca_prm', 'dcca_prm','lds_prm','lstm_model')
+    else
+        load(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}));
     end
-    save(sprintf('./CV_Data/NR_%s_Dataset.mat', data_name{n}), 'Dat', 'pca_prm', 'fa_prm','lcca_prm', 'dcca_prm','lds_prm','lstm_model')
     toc
 end
 
