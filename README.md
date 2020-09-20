@@ -5,7 +5,7 @@ E-mail: mkkim.works@gmail.com
 Affiliation: Ulsan National Institute of Science and Technology (UNIST)
 
 
-Only used Dataset SRT (center-out reaching task) in this example
+Only used Dataset SRT (random pursuit reaching task) in this example
     
 Matlab version: R2019b ('9.7.0.1296695 (R2019b) Update 4')
 Utilized toolboxes
